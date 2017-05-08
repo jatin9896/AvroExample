@@ -4,6 +4,6 @@
 "name": "emp",
 "fields": [
 {"name": "Name", "type": "string"},
-{"name": "age", "type": "int"}
+{"name": "id", "type": "string"}
 ]
 }
