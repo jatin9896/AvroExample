@@ -3,7 +3,9 @@ import org.apache.avro.file.DataFileWriter;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.generic.GenericRecord;
+import org.apache.avro.io.BinaryEncoder;
 import org.apache.avro.io.DatumWriter;
+import org.apache.avro.io.EncoderFactory;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -20,17 +22,17 @@ public class Serialize {
             empRecord.put("age", 21);
             DatumWriter<GenericRecord> dw = new GenericDatumWriter<GenericRecord>(schema);
             DataFileWriter<GenericRecord> dfw = new DataFileWriter<GenericRecord>(dw);
-            //   dfw.append(empRecord);
             System.out.println("Serialize success");
             System.out.println("record entered " + empRecord);
             Socket client = new Socket("localhost", 8090);
             System.out.println("Just connected to " + client.getRemoteSocketAddress());
             OutputStream outToServer = client.getOutputStream();
-            DataOutputStream out = new DataOutputStream(outToServer);
-            //System.out.print();
-            dfw.create(schema, out);
+            dfw.create(schema, outToServer);
+            EncoderFactory  enc=new EncoderFactory();
+            BinaryEncoder binaryEncoder=enc.binaryEncoder(outToServer,null);
+            dw.write(empRecord,binaryEncoder);
+            binaryEncoder.flush();
             dfw.flush();
-              out.writeUTF("Hello from " + client.getLocalSocketAddress());
             dfw.close();
 
         } catch (IOException e) {
